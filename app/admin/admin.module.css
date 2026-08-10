@@ -1,0 +1,487 @@
+.page {
+    min-height: 100vh;
+    padding: 1rem;
+    color: var(--text-primary);
+    font-family: var(--font-main);
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-blueprint);
+    padding-bottom: 0.5rem;
+    align-items: center;
+}
+
+.tab {
+    background: transparent;
+    border: 1px solid var(--border-blueprint);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    opacity: 0.6;
+}
+
+.activeTab {
+    opacity: 1;
+    background: rgba(var(--bg-paper-rgb), 0.8);
+}
+
+/* Layout */
+.panelGrid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.panel {
+    border: 1px solid var(--border-blueprint);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    background: rgba(var(--bg-paper-rgb), 0.5);
+    backdrop-filter: blur(8px);
+}
+
+.panelTitle {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.sectionTitle {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Inputs */
+.inputRow {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border-blueprint);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--border-radius);
+    outline: none;
+}
+
+.input:focus {
+    border-color: var(--text-accent);
+}
+
+.inputSm {
+    composes: input;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+    width: 100%;
+}
+
+.formGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Buttons */
+.btn {
+    background: transparent;
+    border: 1px solid var(--border-blueprint);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    white-space: nowrap;
+}
+
+.btn:hover {
+    border-color: var(--text-accent);
+    color: var(--text-accent);
+}
+
+.btnSm {
+    composes: btn;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+}
+
+.btnDanger {
+    composes: btn;
+    border-color: transparent;
+    opacity: 0.5;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+}
+
+.btnDanger:hover {
+    opacity: 1;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* Lists */
+.list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.listItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--border-blueprint);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.listItem:hover {
+    background: rgba(var(--bg-paper-rgb), 0.6);
+}
+
+.selected {
+    border-color: var(--text-accent);
+}
+
+.listItemContent {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.themeThumbnail {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* ── Theme image/video cards (with caption/location inputs) ── */
+.imageGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.5rem;
+}
+
+.imageCard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    border: 1px solid var(--border-blueprint);
+    border-radius: var(--border-radius);
+    padding: 0.4rem;
+    font-size: 0.75rem;
+}
+
+.imageCardThumb {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.coverBadge {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    background: var(--text-accent);
+    color: #0d0d0d;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+}
+
+.imageCardActions {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+}
+
+/* ── Featured grid: larger cards, hover overlay for actions ── */
+.featuredGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.featuredCard {
+    position: relative;
+    border: 1px solid var(--border-blueprint);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: grab;
+    transition: border-color 0.15s;
+}
+
+.featuredCard:hover {
+    border-color: var(--text-accent);
+}
+
+.featuredCardDragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}
+
+.featuredThumb {
+    position: relative;
+    aspect-ratio: 3/4;
+    width: 100%;
+}
+
+.featuredThumb img,
+.featuredThumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Order badge — top-left */
+.orderBadge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 0.65rem;
+    font-family: var(--font-main);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--border-radius);
+    pointer-events: none;
+}
+
+/* Type badge — top-right */
+.typeBadge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    font-size: 0.6rem;
+    font-family: var(--font-main);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--border-radius);
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* Large badge — bottom-right */
+.largeBadge {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: var(--text-accent);
+    color: #0d0d0d;
+    font-size: 0.6rem;
+    font-family: var(--font-main);
+    font-weight: 600;
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--border-radius);
+    pointer-events: none;
+}
+
+/* Hover action overlay */
+.featuredOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+}
+
+.featuredCard:hover .featuredOverlay {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.overlayBtn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 0.72rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    width: 80%;
+    text-align: center;
+    transition:
+        background 0.12s,
+        border-color 0.12s;
+    white-space: nowrap;
+}
+
+.overlayBtn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: #fff;
+}
+
+.overlayBtnDanger:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* Drag hint label under featured grid */
+.dragHint {
+    font-size: 0.72rem;
+    opacity: 0.4;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-main);
+}
+
+/* ── Unfeatured grid: smaller, just thumbnail + one button ── */
+.unfeaturedGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+}
+
+.unfeaturedCard {
+    position: relative;
+    border: 1px solid var(--border-blueprint);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: border-color 0.15s;
+}
+
+.unfeaturedCard:hover {
+    border-color: var(--text-accent);
+}
+
+.unfeaturedThumb {
+    position: relative;
+    aspect-ratio: 1;
+}
+
+.unfeaturedThumb img,
+.unfeaturedThumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.unfeaturedOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+}
+
+.unfeaturedCard:hover .unfeaturedOverlay {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* R2 picker */
+.r2Thumb {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.r2Thumb:hover {
+    border-color: var(--text-accent);
+}
+
+.r2ThumbInTheme {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.r2ThumbInTheme:hover {
+    border-color: transparent;
+}
+
+.r2ThumbOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+/* Misc */
+.muted {
+    opacity: 0.55;
+    font-size: 0.8rem;
+}
+
+.mediaTabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.mediaTab {
+    background: transparent;
+    border: 1px solid var(--border-blueprint);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.8rem;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    opacity: 0.6;
+}
+
+.activeMediaTab {
+    opacity: 1;
+    border-color: var(--text-accent);
+    color: var(--text-accent);
+}
+
+.videoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.5rem;
+}

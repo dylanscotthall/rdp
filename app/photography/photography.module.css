@@ -1,0 +1,106 @@
+.page {
+    min-height: 100vh;
+    padding: 1rem 1rem 0rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.muted {
+    text-align: center;
+    opacity: 0.5;
+    font-size: 0.9rem;
+}
+
+/* Grid — large hero cards, 2 per row on desktop */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 1px solid var(--border-blueprint);
+    transition:
+        border-color 0.3s ease,
+        transform 0.3s ease;
+}
+
+.card:hover {
+    border-color: var(--text-accent);
+    transform: scale(var(--hover-zoom));
+}
+
+.cardImageWrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: rgba(var(--bg-paper-rgb), 0.4);
+}
+
+.cardImage {
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .cardImage {
+    transform: scale(var(--hover-zoom));
+}
+
+.cardPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    opacity: 0.4;
+}
+
+.cardOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0) 45%
+    );
+}
+
+.cardLabel {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 1.5rem;
+    color: var(--text-accent);
+    transition: color 0.3s ease;
+}
+
+.cardLabel::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.3rem;
+    width: 0;
+    height: 2px;
+    background: var(--text-accent);
+    transition: width 0.3s ease;
+}
+
+.card:hover .cardLabel {
+    color: var(--text-accent);
+}
+
+.card:hover .cardLabel::after {
+    width: 100%;
+}

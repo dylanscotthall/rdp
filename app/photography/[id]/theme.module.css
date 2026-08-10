@@ -1,106 +1,93 @@
 .page {
     min-height: 100vh;
-    padding: 1rem 0rem 0rem 0rem;
+    padding: 1rem 1rem 0rem;
     max-width: 1400px;
     margin: 0 auto;
+}
+
+.header {
+    margin-bottom: 2.5rem;
+}
+
+.title {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-accent-dark-only);
+}
+
+.count {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    opacity: 0.5;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .muted {
     text-align: center;
     opacity: 0.5;
     font-size: 0.9rem;
+    margin-top: 2rem;
 }
 
-/* Bento-style grid — 3 columns, large tiles span 2 */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-auto-rows: 260px;
-    gap: 1rem;
+/* Masonry-style grid */
+.masonry {
+    columns: 3 280px;
+    column-gap: 1rem;
 }
 
-@media (max-width: 900px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: 200px;
-    }
-}
-
-@media (max-width: 560px) {
-    .grid {
-        grid-template-columns: 1fr;
-        grid-auto-rows: 240px;
+@media (max-width: 700px) {
+    .masonry {
+        columns: 1;
     }
 }
 
 .tile {
     position: relative;
+    display: block;
+    width: 100%;
+    margin-bottom: 1rem;
+    break-inside: avoid;
     border: none;
-    padding: 0;
+    background: rgba(var(--bg-paper-rgb), 0.4);
     border-radius: var(--border-radius);
     overflow: hidden;
     cursor: pointer;
-    background: rgba(var(--bg-paper-rgb), 0.4);
-    border: 1px solid var(--border-blueprint);
-    transition:
-        border-color 0.3s ease,
-        transform 0.3s ease;
-}
-.tile:hover {
-    border-color: var(--text-accent);
-    transform: scale(var(--hover-zoom));
+    aspect-ratio: 3 / 4;
+    padding: 0;
 }
 
-.tileLarge {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-.tileLarge:hover {
-    transform: scale(var(--large-hover-zoom));
-}
-@media (max-width: 560px) {
-    .tileLarge {
-        grid-column: span 1;
-        grid-row: span 2;
-    }
+.tile:nth-child(3n + 2) {
+    aspect-ratio: 4 / 5;
 }
 
-.tileMedia {
-    width: 100%;
-    height: 100%;
+.tile:nth-child(4n) {
+    aspect-ratio: 1;
+}
+
+.tileImage {
     object-fit: cover;
     transition: transform 0.4s ease;
 }
 
-.tile:hover .tileMedia {
+.tile:hover .tileImage {
     transform: scale(var(--hover-zoom));
 }
 
 .tileOverlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 40%);
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.55) 0%,
+        transparent 35%
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
 .tile:hover .tileOverlay {
-    opacity: 1;
-}
-
-.playIcon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.6rem;
-    color: rgba(255, 255, 255, 0.85);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.tile:hover .playIcon {
     opacity: 1;
 }
 
@@ -110,7 +97,7 @@
     left: 0.85rem;
     right: 0.85rem;
     font-size: 0.75rem;
-    color: var(--text-accent);
+    color: #fff;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -119,10 +106,9 @@
 
 .tile:hover .tileCaption {
     opacity: 1;
-    color: var(--text-accent);
 }
 
-/* Lightbox — same pattern as theme galleries */
+/* Lightbox */
 .lightbox {
     position: fixed;
     inset: 0;
@@ -131,6 +117,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .lightboxContent {
@@ -150,17 +146,20 @@
     max-width: 1200px;
 }
 
-.lightboxVideo {
-    max-width: 1200px;
-    max-height: 80vh;
-    width: 100%;
-}
-
 .lightboxInfo {
     margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
     color: #fff;
     font-size: 0.85rem;
     text-align: center;
+}
+
+.lightboxLocation {
+    opacity: 0.6;
+    font-size: 0.75rem;
 }
 
 .closeBtn {
@@ -209,6 +208,7 @@
 .navBtnLeft {
     left: 1.5rem;
 }
+
 .navBtnRight {
     right: 1.5rem;
 }

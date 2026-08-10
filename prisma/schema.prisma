@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Location {
+  id        Int      @id @default(autoincrement())
+  name      String
+  country   String
+  latitude  String
+  longitude String
+  createdAt DateTime @default(now())
+
+  images Image[]
+  videos Video[]
+}
+
+model Theme {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+
+  coverImageId String? @unique
+  coverImage   Image?  @relation("ThemeCoverImage", fields: [coverImageId], references: [id])
+
+  coverVideoId String? @unique
+  coverVideo   Video?  @relation("ThemeCoverVideo", fields: [coverVideoId], references: [id])
+
+  themeImages ThemeImage[]
+  themeVideos ThemeVideo[]
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  fileUrl   String
+  caption   String?
+  width     Int?
+  height    Int?
+  createdAt DateTime @default(now())
+
+  locationId Int?
+  location   Location? @relation(fields: [locationId], references: [id])
+
+  themeImages   ThemeImage[]
+  coverForTheme Theme?       @relation("ThemeCoverImage")
+
+  featured       Boolean @default(false)
+  featuredOrder  Int?
+  featuredLarge  Boolean @default(false)
+}
+
+model Video {
+  id        String   @id @default(cuid())
+  fileUrl   String
+  caption   String?
+  duration  Int?
+  createdAt DateTime @default(now())
+
+  locationId Int?
+  location   Location? @relation(fields: [locationId], references: [id])
+
+  themeVideos   ThemeVideo[]
+  coverForTheme Theme?       @relation("ThemeCoverVideo")
+
+  featured       Boolean @default(false)
+  featuredOrder  Int?
+  featuredLarge  Boolean @default(false)
+}
+
+// Join tables — an image/video can belong to many themes
+model ThemeImage {
+  themeId Int
+  imageId String
+
+  theme Theme @relation(fields: [themeId], references: [id], onDelete: Cascade)
+  image Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([themeId, imageId])
+}
+
+model ThemeVideo {
+  themeId Int
+  videoId String
+
+  theme Theme @relation(fields: [themeId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@id([themeId, videoId])
+}
