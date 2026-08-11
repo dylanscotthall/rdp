@@ -6,16 +6,6 @@ import * as topojson from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
 import type { FeatureCollection, Geometry } from "geojson";
 
-// Tell TypeScript that <line> inside @react-three/fiber Canvas is a Three.js
-// object, not an SVG element — they share the tag name which confuses the checker.
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      line: any;
-    }
-  }
-}
-
 const GLOBE_RADIUS = 2;
 
 function geoToVector3(lat: number, lng: number, radius: number): THREE.Vector3 {
@@ -38,12 +28,9 @@ function extractRings(geometry: Geometry): [number, number][][] {
   return [];
 }
 
-// Builds the lat/long grid — circles of latitude and meridians of longitude,
-// the classic "nautical chart" graticule look.
 function buildGraticule(radius: number, step = 15): THREE.Vector3[][] {
   const lines: THREE.Vector3[][] = [];
 
-  // Parallels (lines of latitude) — horizontal rings
   for (let lat = -75; lat <= 75; lat += step) {
     const ring: THREE.Vector3[] = [];
     for (let lng = -180; lng <= 180; lng += 4) {
@@ -52,7 +39,6 @@ function buildGraticule(radius: number, step = 15): THREE.Vector3[][] {
     lines.push(ring);
   }
 
-  // Meridians (lines of longitude) — vertical rings, pole to pole
   for (let lng = -180; lng < 180; lng += step) {
     const ring: THREE.Vector3[] = [];
     for (let lat = -90; lat <= 90; lat += 4) {
@@ -105,25 +91,42 @@ export default function GlobeWireframe({
     };
   }, [radius]);
 
-  const countryGeometries = useMemo(
+  // Build Three.js Line objects inside useMemo so they are only
+  // recreated when the underlying data changes, not on every render.
+  const countryLineObjects = useMemo(
     () =>
-      countryLines.map((points) =>
-        new THREE.BufferGeometry().setFromPoints(points),
+      countryLines.map(
+        (points) =>
+          new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints(points),
+            new THREE.LineBasicMaterial({
+              color: "#f5c800",
+              transparent: true,
+              opacity: 0.8,
+            }),
+          ),
       ),
     [countryLines],
   );
 
-  // Graticule sits just under the country lines so borders read on top
-  const graticuleGeometries = useMemo(() => {
+  const graticuleLineObjects = useMemo(() => {
     const lines = buildGraticule(radius + 0.002);
-    return lines.map((points) =>
-      new THREE.BufferGeometry().setFromPoints(points),
+    return lines.map(
+      (points) =>
+        new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(points),
+          new THREE.LineBasicMaterial({
+            color: "#6b7a99",
+            transparent: true,
+            opacity: 0.25,
+          }),
+        ),
     );
   }, [radius]);
 
   return (
     <group>
-      {/* Base sphere — lighter navy with subtle sheen so it reads as a lit object, not a void */}
+      {/* Base sphere */}
       <mesh>
         <sphereGeometry args={[radius - 0.005, 64, 64]} />
         <meshPhongMaterial
@@ -135,7 +138,7 @@ export default function GlobeWireframe({
         />
       </mesh>
 
-      {/* Faint atmosphere rim — slightly larger transparent sphere for a soft glow edge */}
+      {/* Atmosphere rim glow */}
       <mesh>
         <sphereGeometry args={[radius + 0.025, 48, 48]} />
         <meshBasicMaterial
@@ -146,18 +149,14 @@ export default function GlobeWireframe({
         />
       </mesh>
 
-      {/* Graticule — faint grid, dimmer than country borders */}
-      {graticuleGeometries.map((geometry, i) => (
-        <line key={`grat-${i}`} geometry={geometry}>
-          <lineBasicMaterial color="#6b7a99" transparent opacity={0.25} />
-        </line>
+      {/* Graticule grid — primitive avoids the SVG <line> type conflict */}
+      {graticuleLineObjects.map((lineObj, i) => (
+        <primitive key={`grat-${i}`} object={lineObj} />
       ))}
 
       {/* Country border lines */}
-      {countryGeometries.map((geometry, i) => (
-        <line key={`country-${i}`} geometry={geometry}>
-          <lineBasicMaterial color="#f5c800" transparent opacity={0.8} />
-        </line>
+      {countryLineObjects.map((lineObj, i) => (
+        <primitive key={`country-${i}`} object={lineObj} />
       ))}
     </group>
   );
