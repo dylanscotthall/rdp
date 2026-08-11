@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./login.module.css";
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
@@ -13,10 +13,8 @@ export default function AdminLoginPage() {
 
   const from = searchParams.get("from") ?? "/admin";
 
-  // If already authed, redirect immediately
   useEffect(() => {
     fetch("/admin", { method: "HEAD", redirect: "manual" }).then((res) => {
-      // If the /admin route doesn't redirect us, we're already logged in
       if (res.type !== "opaqueredirect" && res.ok) {
         router.replace(from);
       }
@@ -27,14 +25,12 @@ export default function AdminLoginPage() {
     if (!password) return;
     setLoading(true);
     setError("");
-
     try {
       const res = await fetch("/api/admin/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
-
       if (res.ok) {
         router.replace(from);
       } else {
@@ -72,5 +68,13 @@ export default function AdminLoginPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
