@@ -180,7 +180,6 @@ export const api = {
     id: string,
     data: {
       caption?: string;
-      images;
       locationId?: number | null;
       featured?: boolean;
       featuredOrder?: number | null;
