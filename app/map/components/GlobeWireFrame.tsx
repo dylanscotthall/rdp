@@ -6,6 +6,16 @@ import * as topojson from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
 import type { FeatureCollection, Geometry } from "geojson";
 
+// Tell TypeScript that <line> inside @react-three/fiber Canvas is a Three.js
+// object, not an SVG element — they share the tag name which confuses the checker.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      line: any;
+    }
+  }
+}
+
 const GLOBE_RADIUS = 2;
 
 function geoToVector3(lat: number, lng: number, radius: number): THREE.Vector3 {
