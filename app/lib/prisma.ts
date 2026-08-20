@@ -3,7 +3,7 @@ import { PrismaClient } from "@/app/generated/prisma/client";
 declare global {
   var prisma: PrismaClient | undefined;
 }
-//Client
+
 function createClient(): PrismaClient {
   if (process.env.TURSO_DATABASE_URL) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
