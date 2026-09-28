@@ -32,9 +32,6 @@ type AdminTab = "themes" | "locations" | "featured";
 type MediaTab = "images" | "videos";
 type FeaturedItem = (ImageRecord | VideoRecord) & {
   type: "image" | "video";
-  featured: boolean;
-  featuredOrder: number | null;
-  featuredLarge: boolean;
 };
 
 export default function AdminPage() {
@@ -784,8 +781,8 @@ function FeaturedPanel() {
     ]);
 
     const combined: FeaturedItem[] = [
-      ...(imgs as any[]).map((img) => ({ ...img, type: "image" as const })),
-      ...(vids as any[]).map((vid) => ({ ...vid, type: "video" as const })),
+      ...imgs.map((img) => ({ ...img, type: "image" as const })),
+      ...vids.map((vid) => ({ ...vid, type: "video" as const })),
     ];
 
     setFeaturedItems(

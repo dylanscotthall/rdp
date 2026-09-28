@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { api, type FeaturedItem } from "@/app/lib/api";
 import styles from "./page.module.css";
@@ -19,13 +19,15 @@ export default function Home() {
 
   const active = activeIndex !== null ? items[activeIndex] : null;
 
-  const close = () => setActiveIndex(null);
-  const prev = () =>
+  const close = useCallback(() => setActiveIndex(null), []);
+  const prev = useCallback(() => {
     setActiveIndex((i) =>
       i === null ? null : (i - 1 + items.length) % items.length,
     );
-  const next = () =>
+  }, [items.length]);
+  const next = useCallback(() => {
     setActiveIndex((i) => (i === null ? null : (i + 1) % items.length));
+  }, [items.length]);
 
   useEffect(() => {
     if (activeIndex === null) return;
@@ -36,7 +38,7 @@ export default function Home() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [activeIndex, items.length]);
+  }, [activeIndex, close, prev, next]);
 
   return (
     <div className={styles.page}>

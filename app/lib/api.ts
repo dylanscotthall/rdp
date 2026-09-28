@@ -16,6 +16,9 @@ export interface ImageRecord {
   height: number | null;
   locationId: number | null;
   location: Location | null;
+  featured: boolean;
+  featuredOrder: number | null;
+  featuredLarge: boolean;
 }
 
 export interface VideoRecord {
@@ -25,6 +28,9 @@ export interface VideoRecord {
   duration: number | null;
   locationId: number | null;
   location: Location | null;
+  featured: boolean;
+  featuredOrder: number | null;
+  featuredLarge: boolean;
 }
 
 export interface Theme {

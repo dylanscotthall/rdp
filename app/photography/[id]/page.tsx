@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./theme.module.css";
@@ -20,7 +20,6 @@ interface Theme {
 
 export default function ThemeGalleryPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
 
   const [theme, setTheme] = useState<Theme | null>(null);
   const [images, setImages] = useState<ImageRecord[]>([]);

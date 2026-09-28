@@ -13,6 +13,10 @@ export async function DELETE(_req: Request, ctx: Ctx) {
     where: { locationId: Number(id) },
     data: { locationId: null },
   });
+  await prisma.video.updateMany({
+    where: { locationId: Number(id) },
+    data: { locationId: null },
+  });
   await prisma.location.delete({ where: { id: Number(id) } });
   return NextResponse.json({ success: true });
 }
