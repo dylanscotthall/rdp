@@ -178,3 +178,16 @@
     color: rgba(255, 255, 255, 0.85);
     pointer-events: none;
 }
+
+/* Location name shown when hovering a pin */
+.pinLabel {
+    pointer-events: none;
+    white-space: nowrap;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    background: rgba(var(--bg-paper-rgb), 0.85);
+    color: var(--text-primary);
+    border: 1px solid var(--border-blueprint);
+}

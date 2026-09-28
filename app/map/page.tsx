@@ -1,9 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense, useMemo, useRef, useState, useEffect } from "react";
+import {
+  Suspense,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  type ComponentRef,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
+import { Html, OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import Image from "next/image";
 import { api, type Location, type LocationMediaItem } from "@/app/lib/api";
@@ -12,6 +19,7 @@ import styles from "./map.module.css";
 
 const GLOBE_RADIUS = 2;
 const CELESTIAL_RADIUS = 28;
+const PIN_COLOR = "#f5c800";
 
 // ── Coordinate conversion ──────────────────────────────────────────────────────
 
@@ -44,7 +52,6 @@ function vector3ToLatLng(vector: THREE.Vector3): { lat: number; lng: number } {
 // ── Real-world-ish sun and moon positions ──────────────────────────────────────
 
 function getSunPosition(date: Date): THREE.Vector3 {
-  const rad = Math.PI / 180;
   const deg = 180 / Math.PI;
 
   const startOfYear = Date.UTC(date.getUTCFullYear(), 0, 0);
@@ -195,28 +202,108 @@ function LocationPins({
 }) {
   return (
     <>
-      {locations.map((location) => {
-        const position = latLngToVector3(
-          Number(location.latitude),
-          Number(location.longitude),
-          GLOBE_RADIUS + 0.05,
-        );
-
-        return (
-          <mesh
-            key={location.id}
-            position={position.clone().multiplyScalar(scale)}
-            onClick={(e) => {
-              e.stopPropagation();
-              onPinClick(location, e.nativeEvent);
-            }}
-          >
-            <sphereGeometry args={[0.05 * scale, 16, 16]} />
-            <meshBasicMaterial color="#f5c800" />
-          </mesh>
-        );
-      })}
+      {locations.map((location) => (
+        <LocationPin
+          key={location.id}
+          location={location}
+          scale={scale}
+          onPinClick={onPinClick}
+        />
+      ))}
     </>
+  );
+}
+
+const PIN_UP = new THREE.Vector3(0, 1, 0);
+
+function LocationPin({
+  location,
+  scale,
+  onPinClick,
+}: {
+  location: Location;
+  scale: number;
+  onPinClick: (location: Location, event: MouseEvent) => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const haloRef = useRef<THREE.Mesh>(null);
+
+  // Stand the pin upright on the surface: local +Y points away from the globe
+  const { position, quaternion } = useMemo(() => {
+    const normal = latLngToVector3(
+      Number(location.latitude),
+      Number(location.longitude),
+      1,
+    );
+    return {
+      position: normal.clone().multiplyScalar(GLOBE_RADIUS),
+      quaternion: new THREE.Quaternion().setFromUnitVectors(PIN_UP, normal),
+    };
+  }, [location.latitude, location.longitude]);
+
+  // Ripple that expands and fades out on a loop
+  useFrame(({ clock }) => {
+    const halo = haloRef.current;
+    if (!halo) return;
+    const t = (clock.elapsedTime * 0.7) % 1;
+    halo.scale.setScalar(1 + t * 2.5);
+    (halo.material as THREE.MeshBasicMaterial).opacity = 0.8 * (1 - t);
+  });
+
+  useEffect(() => {
+    document.body.style.cursor = hovered ? "pointer" : "";
+    return () => {
+      document.body.style.cursor = "";
+    };
+  }, [hovered]);
+
+  return (
+    <group
+      position={position.clone().multiplyScalar(scale)}
+      quaternion={quaternion}
+      scale={scale * (hovered ? 1.3 : 1)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onPinClick(location, e.nativeEvent);
+      }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={() => setHovered(false)}
+    >
+      <mesh ref={haloRef} rotation={[-Math.PI / 2, 0, 0]} raycast={() => null}>
+        <ringGeometry args={[0.04, 0.055, 32]} />
+        <meshBasicMaterial
+          color={PIN_COLOR}
+          transparent
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+
+      <mesh position={[0, 0.09, 0]}>
+        <cylinderGeometry args={[0.008, 0.008, 0.18, 8]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+
+      <mesh position={[0, 0.2, 0]}>
+        <sphereGeometry args={[0.055, 24, 24]} />
+        <meshBasicMaterial color={PIN_COLOR} />
+      </mesh>
+
+      {/* Invisible, larger hit target so the pin is easy to click */}
+      <mesh position={[0, 0.15, 0]}>
+        <sphereGeometry args={[0.12, 12, 12]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
+      {hovered && (
+        <Html position={[0, 0.32, 0]} center className={styles.pinLabel}>
+          {location.name}
+        </Html>
+      )}
+    </group>
   );
 }
 
@@ -294,7 +381,7 @@ function GlobeScene() {
     [currentDate, sunPosition],
   );
 
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
 
   useEffect(() => {
     api
