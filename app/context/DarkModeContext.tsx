@@ -7,6 +7,7 @@ import {
   useSyncExternalStore,
   ReactNode,
 } from "react";
+import { THEME_KEY } from "@/app/lib/theme";
 
 interface DarkModeContextType {
   isDark: boolean;
@@ -20,8 +21,6 @@ const DarkModeContext = createContext<DarkModeContextType | null>(null);
 // The CSS variables switch with the .dark class, so the map colours never change
 const MAP_FILL_COLOR = "var(--map-fill)";
 const MAP_STROKE_COLOR = "var(--map-stroke)";
-
-const THEME_KEY = "theme";
 
 // The saved theme lives in localStorage; useSyncExternalStore reads it
 // without a hydration mismatch (the server always renders dark).
