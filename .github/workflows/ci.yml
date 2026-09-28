@@ -1,0 +1,30 @@
+name: CI
+
+# Railway waits for this check to pass before deploying a push to main
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # prisma.config.ts requires a datasource URL; CI never touches a real database
+      DATABASE_URL: file:./ci.db
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
