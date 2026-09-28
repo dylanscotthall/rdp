@@ -13,7 +13,7 @@ export default function AboutPage() {
           <div className={styles.heroContent}>
             <div className={styles.avatarWrap}>
               <Image
-                src="https://pub-173a4c1c82904352a056d6fdb8a68209.r2.dev/photos/web/AnaliseFaceShot.JPG"
+                src="https://media.rude-dude.com/photos/web/AnaliseFaceShot.JPG"
                 alt="Photographer portrait"
                 width={140}
                 height={140}

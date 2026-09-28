@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "pub-*.r2.dev" }],
+    remotePatterns: [{ protocol: "https", hostname: "media.rude-dude.com" }],
   },
 };
 
