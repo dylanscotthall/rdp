@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { api, type Theme, type VideoRecord } from "@/app/lib/api";
+import { useLockBodyScroll, useSwipe } from "@/app/lib/lightbox";
 import styles from "./theme.module.css";
 
 export default function VideoThemeGalleryPage() {
@@ -47,6 +48,13 @@ export default function VideoThemeGalleryPage() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [activeIndex, closeViewer, prevVideo, nextVideo]);
+
+  const swipe = useSwipe({
+    onLeft: nextVideo,
+    onRight: prevVideo,
+    onDown: closeViewer,
+  });
+  useLockBodyScroll(activeIndex !== null);
 
   if (loading)
     return (
@@ -113,7 +121,7 @@ export default function VideoThemeGalleryPage() {
       )}
 
       {active && (
-        <div className={styles.lightbox} onClick={closeViewer}>
+        <div className={styles.lightbox} onClick={closeViewer} {...swipe}>
           <button
             className={styles.closeBtn}
             onClick={closeViewer}
@@ -156,6 +164,7 @@ export default function VideoThemeGalleryPage() {
               src={active.fileUrl}
               controls
               autoPlay
+              playsInline
               className={styles.lightboxVideo}
             />
 

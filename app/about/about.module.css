@@ -266,4 +266,24 @@
     .avatarWrap {
         margin: 0 auto;
     }
+
+    /* Buttons follow the centred hero text */
+    .ctaRow {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1rem 1rem 2rem;
+    }
+
+    .hero,
+    .section {
+        padding: 1.25rem;
+    }
+
+    .title {
+        font-size: 1.7rem;
+    }
 }

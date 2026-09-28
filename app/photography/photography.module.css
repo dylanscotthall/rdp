@@ -37,11 +37,6 @@
         transform 0.3s ease;
 }
 
-.card:hover {
-    border-color: var(--text-accent);
-    transform: scale(var(--hover-zoom));
-}
-
 .cardImageWrap {
     position: relative;
     width: 100%;
@@ -52,10 +47,6 @@
 .cardImage {
     object-fit: cover;
     transition: transform 0.5s ease;
-}
-
-.card:hover .cardImage {
-    transform: scale(var(--hover-zoom));
 }
 
 .cardPlaceholder {
@@ -97,10 +88,23 @@
     transition: width 0.3s ease;
 }
 
-.card:hover .cardLabel {
-    color: var(--text-accent);
-}
+/* Hover effects only where there's a real pointer: on phones a tap
+   leaves :hover stuck on, so tiles stayed zoomed past the screen edge */
+@media (hover: hover) {
+    .card:hover {
+        border-color: var(--text-accent);
+        transform: scale(var(--hover-zoom));
+    }
 
-.card:hover .cardLabel::after {
-    width: 100%;
+    .card:hover .cardImage {
+        transform: scale(var(--hover-zoom));
+    }
+
+    .card:hover .cardLabel {
+        color: var(--text-accent);
+    }
+
+    .card:hover .cardLabel::after {
+        width: 100%;
+    }
 }

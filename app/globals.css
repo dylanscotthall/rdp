@@ -43,6 +43,9 @@ html.dark {
 
 html {
     scroll-behavior: smooth;
+    /* Stop iOS enlarging text when the phone is turned sideways */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
@@ -50,6 +53,7 @@ body {
     background-color: var(--bg-paper);
     color: var(--text-primary);
     min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
     transition:
         background-color 0.3s ease,
         color 0.3s ease;

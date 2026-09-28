@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDarkMode } from "@/app/context/DarkModeContext";
 import styles from "./Navbar.module.css";
 
@@ -17,9 +17,27 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { isDark, toggleDark } = useDarkMode();
+  const navRef = useRef<HTMLElement>(null);
+
+  // Close the mobile menu when tapping anywhere outside it or pressing Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!navRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
 
   return (
-    <nav className={`${styles.nav} blur-background`}>
+    <nav ref={navRef} className={`${styles.nav} blur-background`}>
       <h1 className={styles.logo}>
         <Link href="/">RUDE._.DUDE</Link>
       </h1>
@@ -85,6 +103,7 @@ export default function Navbar() {
         className={styles.hamburger}
         onClick={() => setMenuOpen((v) => !v)}
         aria-label="Menu"
+        aria-expanded={menuOpen}
       >
         {menuOpen ? "✕" : "☰"}
       </button>

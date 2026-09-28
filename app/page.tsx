@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { api, type FeaturedItem } from "@/app/lib/api";
+import { useLockBodyScroll, useSwipe } from "@/app/lib/lightbox";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -40,6 +41,9 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handler);
   }, [activeIndex, close, prev, next]);
 
+  const swipe = useSwipe({ onLeft: next, onRight: prev, onDown: close });
+  useLockBodyScroll(activeIndex !== null);
+
   return (
     <div className={styles.page}>
       {loading ? (
@@ -59,7 +63,7 @@ export default function Home() {
       )}
 
       {active && (
-        <div className={styles.lightbox} onClick={close}>
+        <div className={styles.lightbox} onClick={close} {...swipe}>
           <button
             className={styles.closeBtn}
             onClick={close}
@@ -110,6 +114,7 @@ export default function Home() {
                 src={active.fileUrl}
                 controls
                 autoPlay
+                playsInline
                 className={styles.lightboxVideo}
               />
             )}

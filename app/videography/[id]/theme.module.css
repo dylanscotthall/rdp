@@ -68,10 +68,6 @@
     transition: opacity 0.3s ease;
 }
 
-.tile:hover .tileOverlay {
-    opacity: 1;
-}
-
 .tilePlayIcon {
     position: absolute;
     top: 50%;
@@ -82,10 +78,6 @@
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
-}
-
-.tile:hover .tilePlayIcon {
-    opacity: 1;
 }
 
 .tileCaption {
@@ -99,10 +91,6 @@
     opacity: 0;
     transition: opacity 0.3s ease;
     text-align: left;
-}
-
-.tile:hover .tileCaption {
-    opacity: 1;
 }
 
 .lightbox {
@@ -162,11 +150,6 @@
     z-index: 2001;
 }
 
-.closeBtn:hover {
-    border-color: var(--text-accent);
-    color: var(--text-accent);
-}
-
 .navBtn {
     position: absolute;
     top: 50%;
@@ -185,11 +168,6 @@
     justify-content: center;
 }
 
-.navBtn:hover {
-    border-color: var(--text-accent);
-    color: var(--text-accent);
-}
-
 .navBtnLeft {
     left: 1.5rem;
 }
@@ -198,19 +176,64 @@
 }
 
 @media (max-width: 600px) {
+    /* Room at the bottom for the arrows, which sit side by side under the
+       photo instead of covering it */
+    .lightboxContent {
+        padding: 4.5rem 0.5rem 5.5rem;
+    }
     .navBtn {
-        width: 38px;
-        height: 38px;
+        top: auto;
+        bottom: 1.25rem;
+        transform: none;
+        width: 44px;
+        height: 44px;
         font-size: 1.3rem;
     }
     .navBtnLeft {
-        left: 0.5rem;
+        left: calc(50% - 52px);
     }
     .navBtnRight {
-        right: 0.5rem;
+        right: calc(50% - 52px);
     }
     .closeBtn {
         top: 1rem;
         right: 1rem;
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* Hover effects only where there's a real pointer: on phones a tap
+   leaves :hover stuck on, so tiles stayed zoomed past the screen edge */
+@media (hover: hover) {
+    .tile:hover .tileOverlay {
+        opacity: 1;
+    }
+
+    .tile:hover .tilePlayIcon {
+        opacity: 1;
+    }
+
+    .tile:hover .tileCaption {
+        opacity: 1;
+    }
+
+    .closeBtn:hover {
+        border-color: var(--text-accent);
+        color: var(--text-accent);
+    }
+
+    .navBtn:hover {
+        border-color: var(--text-accent);
+        color: var(--text-accent);
+    }
+}
+
+/* Phones can't hover, so captions and play icons are always shown */
+@media (hover: none) {
+    .tileOverlay,
+    .tilePlayIcon,
+    .tileCaption {
+        opacity: 1;
     }
 }

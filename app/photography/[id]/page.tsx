@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useLockBodyScroll, useSwipe } from "@/app/lib/lightbox";
 import styles from "./theme.module.css";
 
 interface ImageRecord {
@@ -61,6 +62,13 @@ export default function ThemeGalleryPage() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [activeIndex, closeViewer, prevImage, nextImage]);
+
+  const swipe = useSwipe({
+    onLeft: nextImage,
+    onRight: prevImage,
+    onDown: closeViewer,
+  });
+  useLockBodyScroll(activeIndex !== null);
 
   if (loading) {
     return (
@@ -121,7 +129,7 @@ export default function ThemeGalleryPage() {
 
       {/* Fullscreen viewer */}
       {active && (
-        <div className={styles.lightbox} onClick={closeViewer}>
+        <div className={styles.lightbox} onClick={closeViewer} {...swipe}>
           <button
             className={styles.closeBtn}
             onClick={closeViewer}

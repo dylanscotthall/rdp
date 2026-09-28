@@ -21,6 +21,16 @@ const GLOBE_RADIUS = 2;
 const CELESTIAL_RADIUS = 28;
 const PIN_COLOR = "#f5c800";
 
+// Camera distance on wide screens; narrow screens move further back so the
+// whole globe (plus a margin) still fits across the width
+const DEFAULT_CAMERA_DISTANCE = 5;
+const GLOBE_FIT_RADIUS = GLOBE_RADIUS * 1.2;
+
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 2;
+const clampScale = (scale: number) =>
+  Math.min(Math.max(scale, MIN_SCALE), MAX_SCALE);
+
 // ── Coordinate conversion ──────────────────────────────────────────────────────
 
 function latLngToVector3(
@@ -307,6 +317,25 @@ function LocationPin({
   );
 }
 
+function GlobeFit({ onDistance }: { onDistance: (distance: number) => void }) {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    const halfFov = THREE.MathUtils.degToRad(
+      (camera as THREE.PerspectiveCamera).fov / 2,
+    );
+    const aspect = size.width / size.height;
+    const distance = Math.max(
+      DEFAULT_CAMERA_DISTANCE,
+      GLOBE_FIT_RADIUS / (Math.tan(halfFov) * aspect),
+    );
+    camera.position.setLength(distance);
+    onDistance(distance);
+  }, [camera, size.width, size.height, onDistance]);
+
+  return null;
+}
+
 function CameraTracker({
   targetPosition,
   onReachedTarget,
@@ -362,6 +391,8 @@ function CenterTracker({
 
 function GlobeScene() {
   const [scale, setScale] = useState(1);
+  const [cameraDistance, setCameraDistance] = useState(DEFAULT_CAMERA_DISTANCE);
+  const pinchDistance = useRef<number | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     null,
   );
@@ -426,7 +457,7 @@ function GlobeScene() {
     const newPos = latLngToVector3(
       Number(location.latitude),
       Number(location.longitude),
-      5,
+      cameraDistance,
     );
 
     setSelectedLocation(location);
@@ -453,7 +484,23 @@ function GlobeScene() {
   };
 
   const handleWheel = (e: React.WheelEvent) => {
-    setScale((prev) => Math.min(Math.max(prev - e.deltaY * 0.001, 0.5), 2));
+    setScale((prev) => clampScale(prev - e.deltaY * 0.001));
+  };
+
+  // Two-finger pinch zooms the globe the same way the mouse wheel does
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length !== 2) return;
+    const [a, b] = [e.touches[0], e.touches[1]];
+    const distance = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    if (pinchDistance.current !== null) {
+      const ratio = distance / pinchDistance.current;
+      setScale((prev) => clampScale(prev * ratio));
+    }
+    pinchDistance.current = distance;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) pinchDistance.current = null;
   };
 
   const closePanel = () => {
@@ -466,8 +513,15 @@ function GlobeScene() {
     activeMediaIndex !== null ? locationMedia[activeMediaIndex] : null;
 
   return (
-    <div className={styles.container} onWheel={handleWheel}>
-      <Canvas camera={{ position: [0, 0, 5], fov: 70 }}>
+    <div
+      className={styles.container}
+      onWheel={handleWheel}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <Canvas camera={{ position: [0, 0, DEFAULT_CAMERA_DISTANCE], fov: 70 }}>
+        <GlobeFit onDistance={setCameraDistance} />
+
         {/*<color attach="background" args={["#02040a"]} />*/}
 
         <ambientLight intensity={0.02} />
@@ -508,7 +562,7 @@ function GlobeScene() {
           />
         </Suspense>
 
-        <OrbitControls ref={controlsRef} enableZoom={false} />
+        <OrbitControls ref={controlsRef} enableZoom={false} enablePan={false} />
 
         <CameraTracker
           targetPosition={targetPosition}
@@ -568,6 +622,8 @@ function GlobeScene() {
                       <video
                         src={item.fileUrl}
                         muted
+                        playsInline
+                        preload="metadata"
                         style={{
                           width: "100%",
                           height: "100%",
@@ -618,7 +674,8 @@ function GlobeScene() {
                 src={activeMedia.fileUrl}
                 controls
                 autoPlay
-                style={{ maxWidth: "100%", maxHeight: "80vh" }}
+                playsInline
+                style={{ maxWidth: "100%", maxHeight: "80dvh" }}
               />
             )}
           </div>

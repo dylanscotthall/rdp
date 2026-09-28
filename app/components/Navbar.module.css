@@ -117,7 +117,9 @@
 
 .mobileMenu .link {
     display: block;
-    padding: 0.6rem 0;
+    padding: 0.85rem 0;
+    /* Square ends so the divider lines run straight across */
+    border-radius: 0;
     font-size: 0.9rem;
     border-bottom: 1px solid var(--border-blueprint);
 }
@@ -128,7 +130,7 @@
     color: var(--text-primary);
     font-family: var(--font-main);
     font-size: 0.85rem;
-    padding: 0.6rem 0;
+    padding: 0.85rem 0;
     cursor: pointer;
     text-align: left;
     width: 100%;
@@ -151,5 +153,11 @@
 
     .hamburger {
         display: flex;
+        width: 44px;
+        height: 44px;
+    }
+
+    .nav {
+        padding: 0.5rem 1rem;
     }
 }

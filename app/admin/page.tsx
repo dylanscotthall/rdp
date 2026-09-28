@@ -5,7 +5,8 @@ import Image from "next/image";
 import {
   DndContext,
   closestCenter,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
@@ -773,7 +774,11 @@ function FeaturedPanel() {
   );
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    // On touch, press and hold to pick a card up so normal swipes still scroll
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 250, tolerance: 5 },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
@@ -874,7 +879,8 @@ function FeaturedPanel() {
         <>
           <h3 className={styles.sectionTitle}>Featured — drag to reorder</h3>
           <p className={styles.dragHint}>
-            Hover a card to unfeature or toggle large
+            Drag cards to reorder (on a phone, press and hold first). Use a
+            card&apos;s buttons to unfeature it or make it large.
           </p>
           <DndContext
             sensors={sensors}
@@ -904,7 +910,7 @@ function FeaturedPanel() {
       {filteredUnfeatured.length > 0 && (
         <>
           <h3 className={styles.sectionTitle} style={{ marginTop: "2rem" }}>
-            Not featured — hover to add
+            Not featured — use Feature to add
           </h3>
           <div className={styles.unfeaturedGrid}>
             {filteredUnfeatured.map((item) => (

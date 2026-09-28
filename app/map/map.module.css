@@ -2,6 +2,8 @@
     position: relative;
     width: 100%;
     height: calc(100vh - 60px);
+    /* dvh = the height actually visible between a phone's browser bars */
+    height: calc(100dvh - 60px);
     overflow: hidden;
     margin-top: 0px;
 }
@@ -90,8 +92,10 @@
     padding: 0;
 }
 
-.imageThumb:hover {
-    outline: 2px solid var(--text-accent);
+@media (hover: hover) {
+    .imageThumb:hover {
+        outline: 2px solid var(--text-accent);
+    }
 }
 
 .noImages {
@@ -103,11 +107,12 @@
     font-size: 0.85rem;
 }
 
-/* Fullscreen image viewer */
+/* Fullscreen image viewer — above the navbar (z-index 1000) so its close
+   button isn't hidden underneath it */
 .lightbox {
     position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: 2000;
     background: rgba(0, 0, 0, 0.92);
     display: flex;
     flex-direction: column;
@@ -141,7 +146,7 @@
     border-radius: var(--border-radius);
     font-size: 1.1rem;
     cursor: pointer;
-    z-index: 101;
+    z-index: 2001;
 }
 
 .lightboxClose:hover {
@@ -190,4 +195,44 @@
     background: rgba(var(--bg-paper-rgb), 0.85);
     color: var(--text-primary);
     border: 1px solid var(--border-blueprint);
+}
+
+/* Phones: the location panel becomes a bottom sheet so the globe and the
+   tapped pin stay visible above it */
+@media (max-width: 640px) {
+    .sidePanel {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-width: none;
+        height: auto;
+        max-height: 60%;
+        padding: 1rem 1rem 1.25rem;
+        border-left: none;
+        border-top: 1px solid var(--border-blueprint);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+
+    .closeBtn {
+        width: 40px;
+        height: 40px;
+    }
+
+    .imageGrid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+
+    .lightboxClose {
+        top: 1rem;
+        right: 1rem;
+        width: 44px;
+        height: 44px;
+    }
+
+    .coordDisplay {
+        bottom: 0.75rem;
+        left: 0.75rem;
+    }
 }

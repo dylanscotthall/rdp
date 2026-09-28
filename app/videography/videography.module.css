@@ -36,11 +36,6 @@
         transform 0.3s ease;
 }
 
-.card:hover {
-    border-color: var(--text-accent);
-    transform: translateY(-4px);
-}
-
 .cardVideoWrap {
     position: relative;
     width: 100%;
@@ -83,4 +78,13 @@
     color: var(--text-accent);
     letter-spacing: 0.03em;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Hover effects only where there's a real pointer: on phones a tap
+   leaves :hover stuck on, so tiles stayed zoomed past the screen edge */
+@media (hover: hover) {
+    .card:hover {
+        border-color: var(--text-accent);
+        transform: translateY(-4px);
+    }
 }

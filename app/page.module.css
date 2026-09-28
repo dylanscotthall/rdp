@@ -1,6 +1,6 @@
 .page {
     min-height: 100vh;
-    padding: 1rem 0rem 0rem 0rem;
+    padding: 1rem 1rem 0;
     max-width: 1400px;
     margin: 0 auto;
 }
@@ -46,17 +46,9 @@
         border-color 0.3s ease,
         transform 0.3s ease;
 }
-.tile:hover {
-    border-color: var(--text-accent);
-    transform: scale(var(--hover-zoom));
-}
-
 .tileLarge {
     grid-column: span 2;
     grid-row: span 2;
-}
-.tileLarge:hover {
-    transform: scale(var(--large-hover-zoom));
 }
 @media (max-width: 560px) {
     .tileLarge {
@@ -72,20 +64,12 @@
     transition: transform 0.4s ease;
 }
 
-.tile:hover .tileMedia {
-    transform: scale(var(--hover-zoom));
-}
-
 .tileOverlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 40%);
     opacity: 0;
     transition: opacity 0.3s ease;
-}
-
-.tile:hover .tileOverlay {
-    opacity: 1;
 }
 
 .playIcon {
@@ -100,10 +84,6 @@
     pointer-events: none;
 }
 
-.tile:hover .playIcon {
-    opacity: 1;
-}
-
 .tileCaption {
     position: absolute;
     bottom: 0.75rem;
@@ -115,11 +95,6 @@
     opacity: 0;
     transition: opacity 0.3s ease;
     text-align: left;
-}
-
-.tile:hover .tileCaption {
-    opacity: 1;
-    color: var(--text-accent);
 }
 
 /* Lightbox — same pattern as theme galleries */
@@ -178,11 +153,6 @@
     z-index: 2001;
 }
 
-.closeBtn:hover {
-    border-color: var(--text-accent);
-    color: var(--text-accent);
-}
-
 .navBtn {
     position: absolute;
     top: 50%;
@@ -201,11 +171,6 @@
     justify-content: center;
 }
 
-.navBtn:hover {
-    border-color: var(--text-accent);
-    color: var(--text-accent);
-}
-
 .navBtnLeft {
     left: 1.5rem;
 }
@@ -214,19 +179,78 @@
 }
 
 @media (max-width: 600px) {
+    /* Room at the bottom for the arrows, which sit side by side under the
+       photo instead of covering it */
+    .lightboxContent {
+        padding: 4.5rem 0.5rem 5.5rem;
+    }
     .navBtn {
-        width: 38px;
-        height: 38px;
+        top: auto;
+        bottom: 1.25rem;
+        transform: none;
+        width: 44px;
+        height: 44px;
         font-size: 1.3rem;
     }
     .navBtnLeft {
-        left: 0.5rem;
+        left: calc(50% - 52px);
     }
     .navBtnRight {
-        right: 0.5rem;
+        right: calc(50% - 52px);
     }
     .closeBtn {
         top: 1rem;
         right: 1rem;
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* Hover effects only where there's a real pointer: on phones a tap
+   leaves :hover stuck on, so tiles stayed zoomed past the screen edge */
+@media (hover: hover) {
+    .tile:hover {
+        border-color: var(--text-accent);
+        transform: scale(var(--hover-zoom));
+    }
+
+    .tileLarge:hover {
+        transform: scale(var(--large-hover-zoom));
+    }
+
+    .tile:hover .tileMedia {
+        transform: scale(var(--hover-zoom));
+    }
+
+    .tile:hover .tileOverlay {
+        opacity: 1;
+    }
+
+    .tile:hover .playIcon {
+        opacity: 1;
+    }
+
+    .tile:hover .tileCaption {
+        opacity: 1;
+        color: var(--text-accent);
+    }
+
+    .closeBtn:hover {
+        border-color: var(--text-accent);
+        color: var(--text-accent);
+    }
+
+    .navBtn:hover {
+        border-color: var(--text-accent);
+        color: var(--text-accent);
+    }
+}
+
+/* Phones can't hover, so captions and play icons are always shown */
+@media (hover: none) {
+    .tileOverlay,
+    .playIcon,
+    .tileCaption {
+        opacity: 1;
     }
 }
