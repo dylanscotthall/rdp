@@ -4,7 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
-  useState,
+  useSyncExternalStore,
   ReactNode,
 } from "react";
 
@@ -13,61 +13,62 @@ interface DarkModeContextType {
   toggleDark: () => void;
   mapFillColor: string;
   mapStrokeColor: string;
-  setMapFillColor: (c: string) => void;
-  setMapStrokeColor: (c: string) => void;
 }
 
 const DarkModeContext = createContext<DarkModeContextType | null>(null);
 
-const DEFAULTS = {
-  dark: { fill: "var(--map-fill)", stroke: "var(--map-stroke)" },
-  light: { fill: "var(--map-fill)", stroke: "var(--map-stroke)" },
-};
+// The CSS variables switch with the .dark class, so the map colours never change
+const MAP_FILL_COLOR = "var(--map-fill)";
+const MAP_STROKE_COLOR = "var(--map-stroke)";
+
+const THEME_KEY = "theme";
+
+// The saved theme lives in localStorage; useSyncExternalStore reads it
+// without a hydration mismatch (the server always renders dark).
+const themeListeners = new Set<() => void>();
+
+function subscribeToTheme(listener: () => void) {
+  themeListeners.add(listener);
+  window.addEventListener("storage", listener);
+  return () => {
+    themeListeners.delete(listener);
+    window.removeEventListener("storage", listener);
+  };
+}
+
+function getIsDark() {
+  return localStorage.getItem(THEME_KEY) !== "light";
+}
+
+function getServerIsDark() {
+  return true;
+}
+
+function saveTheme(dark: boolean) {
+  localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
+  themeListeners.forEach((listener) => listener());
+}
 
 export function DarkModeProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark] = useState(true);
-  const [mapFillColor, setMapFillColor] = useState(DEFAULTS.dark.fill);
-  const [mapStrokeColor, setMapStrokeColor] = useState(DEFAULTS.dark.stroke);
-  const [mounted, setMounted] = useState(false);
+  const isDark = useSyncExternalStore(
+    subscribeToTheme,
+    getIsDark,
+    getServerIsDark,
+  );
 
-  // Single effect on mount — read localStorage, apply class, set all state atomically
   useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const dark = stored !== null ? stored === "dark" : true;
-
-    setIsDark(dark);
-    setMapFillColor(dark ? DEFAULTS.dark.fill : DEFAULTS.light.fill);
-    setMapStrokeColor(dark ? DEFAULTS.dark.stroke : DEFAULTS.light.stroke);
-    document.documentElement.classList.toggle("dark", dark);
-    setMounted(true);
-  }, []);
-
-  // Sync class and localStorage whenever isDark changes after mount
-  useEffect(() => {
-    if (!mounted) return;
     document.documentElement.classList.toggle("dark", isDark);
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  }, [isDark, mounted]);
+  }, [isDark]);
 
-  const toggleDark = () => {
-    setIsDark((v) => {
-      const next = !v;
-      console.log(next);
-      setMapFillColor(next ? DEFAULTS.light.fill : DEFAULTS.dark.fill);
-      setMapStrokeColor(next ? DEFAULTS.dark.stroke : DEFAULTS.light.stroke);
-      return next;
-    });
-  };
+  const toggleDark = () => saveTheme(!isDark);
 
   return (
     <DarkModeContext.Provider
       value={{
         isDark,
         toggleDark,
-        mapFillColor,
-        mapStrokeColor,
-        setMapFillColor,
-        setMapStrokeColor,
+        mapFillColor: MAP_FILL_COLOR,
+        mapStrokeColor: MAP_STROKE_COLOR,
       }}
     >
       <div suppressHydrationWarning>{children}</div>

@@ -88,13 +88,12 @@ function ThemesPanel() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [mediaTab, setMediaTab] = useState<MediaTab>("images");
 
-  const loadThemes = useCallback(async () => {
-    setThemes(await api.fetchThemes());
-  }, []);
+  const loadThemes = useCallback(() => api.fetchThemes().then(setThemes), []);
 
-  const loadLocations = useCallback(async () => {
-    setLocations(await api.fetchLocations());
-  }, []);
+  const loadLocations = useCallback(
+    () => api.fetchLocations().then(setLocations),
+    [],
+  );
 
   useEffect(() => {
     loadThemes();
@@ -241,18 +240,22 @@ function ThemeImagesEditor({
   const [r2Loading, setR2Loading] = useState(true);
   const PAGE_SIZE = 24;
 
-  const loadThemeImages = useCallback(async () => {
-    setThemeImages(await api.fetchThemeImages(theme.id));
-  }, [theme.id]);
+  const loadThemeImages = useCallback(
+    () => api.fetchThemeImages(theme.id).then(setThemeImages),
+    [theme.id],
+  );
 
   useEffect(() => {
-    setR2Loading(true);
     loadThemeImages();
+  }, [loadThemeImages]);
+
+  // The bucket listing doesn't depend on the theme, so load it once
+  useEffect(() => {
     api.listR2Files("photos/web/").then(({ files }) => {
       setR2Files(files);
       setR2Loading(false);
     });
-  }, [theme.id, loadThemeImages]);
+  }, []);
 
   const addImage = async (fileUrl: string) => {
     if (themeImages.some((img) => img.fileUrl === fileUrl)) return;
@@ -419,18 +422,22 @@ function ThemeVideosEditor({
   const [r2Loading, setR2Loading] = useState(true);
   const PAGE_SIZE = 12;
 
-  const loadThemeVideos = useCallback(async () => {
-    setThemeVideos(await api.fetchThemeVideos(theme.id));
-  }, [theme.id]);
+  const loadThemeVideos = useCallback(
+    () => api.fetchThemeVideos(theme.id).then(setThemeVideos),
+    [theme.id],
+  );
 
   useEffect(() => {
-    setR2Loading(true);
     loadThemeVideos();
+  }, [loadThemeVideos]);
+
+  // The bucket listing doesn't depend on the theme, so load it once
+  useEffect(() => {
     api.listR2Files("videos/web/").then(({ files }) => {
       setR2Files(files);
       setR2Loading(false);
     });
-  }, [theme.id, loadThemeVideos]);
+  }, []);
 
   const addVideo = async (fileUrl: string) => {
     if (themeVideos.some((v) => v.fileUrl === fileUrl)) return;
@@ -598,9 +605,7 @@ function LocationsPanel() {
     longitude: "",
   });
 
-  const load = useCallback(async () => {
-    setLocations(await api.fetchLocations());
-  }, []);
+  const load = useCallback(() => api.fetchLocations().then(setLocations), []);
 
   useEffect(() => {
     load();
@@ -774,24 +779,25 @@ function FeaturedPanel() {
     }),
   );
 
-  const load = useCallback(async () => {
-    const [imgs, vids] = await Promise.all([
-      api.fetchAllImages(),
-      api.fetchAllVideos(),
-    ]);
+  const load = useCallback(
+    () =>
+      Promise.all([api.fetchAllImages(), api.fetchAllVideos()]).then(
+        ([imgs, vids]) => {
+          const combined: FeaturedItem[] = [
+            ...imgs.map((img) => ({ ...img, type: "image" as const })),
+            ...vids.map((vid) => ({ ...vid, type: "video" as const })),
+          ];
 
-    const combined: FeaturedItem[] = [
-      ...imgs.map((img) => ({ ...img, type: "image" as const })),
-      ...vids.map((vid) => ({ ...vid, type: "video" as const })),
-    ];
-
-    setFeaturedItems(
-      combined
-        .filter((i) => i.featured)
-        .sort((a, b) => (a.featuredOrder ?? 0) - (b.featuredOrder ?? 0)),
-    );
-    setUnfeaturedItems(combined.filter((i) => !i.featured));
-  }, []);
+          setFeaturedItems(
+            combined
+              .filter((i) => i.featured)
+              .sort((a, b) => (a.featuredOrder ?? 0) - (b.featuredOrder ?? 0)),
+          );
+          setUnfeaturedItems(combined.filter((i) => !i.featured));
+        },
+      ),
+    [],
+  );
 
   useEffect(() => {
     load();
